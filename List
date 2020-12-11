@@ -1,0 +1,106 @@
+#include <conio.h>
+#include <iostream>
+
+struct Node                  //Структура с инфополями и адресным полем
+{
+	int value;                         //Инфополе. значения из x будут передаваться в список
+	Node* Next;                     //Адресное поле
+
+};
+
+class List                      //Класс Список
+{
+	Node* Head;                 //Указатель на последний активный элемент или просто голова списка
+public:
+	List() { Head = NULL; }           //Конструктор и инициализация указателя пустым значением
+	~List();                       //Деструктор. Далее он вынесен за класс
+	void Add(const int x);               //Функция для добавления значений в список
+	void copy(List);
+	void Pop(const int N);
+	int len();
+	Node getHead();
+	void operator=(List);
+	List operator+(List);
+};
+
+List::~List()                   //Деструктор вынесен за класс
+{
+	while (Head != NULL)          //Пока по адресу не пусто
+	{
+		Node* temp = Head->Next;   //Временная переменная для хранения адреса следующего элемента
+		delete Head;                //Освобождаем адрес обозначающий начало
+		Head = temp;                  //Меняем адрес на следующий
+	}
+}
+
+void List::Add(const int value) //Функция добавления элементов в список
+{
+	Node* temp = new Node;           //При каждом вызове выделяется память
+	temp->value = value;                            //Записываем x в элемент структуры  element (в x структуры element)
+	temp->Next = Head;                      //Указываем, что след. элемент это объект по адресу Head
+	Head = temp;                            //Указываем, что последний активный элемент это только что введенный
+}
+
+void List::Pop(const int N)                         //В качестве параметра принимается номер извлекаемого элемента
+{
+	Node* temp = Head;                                  //Обращаемся к началу списка
+	if (Head != NULL)                   //Делаем проверку на то что список не пуст и N не превышает число его элементов
+	{
+		for (int i = 0; i < N; i++) temp = temp->Next;          //Меняем адрес N раз
+		std::cout << temp->value << " " << std::endl;                    //Выводим N элемент списка на экран
+	}
+	std::cout << std::endl;
+}
+
+int List::len()
+{
+	Node* temp = Head;
+	int count = 0;
+	while (temp)
+	{
+		count++;
+		temp = temp->Next;
+	}
+	return count;
+}
+
+Node List::getHead()
+{
+	return *Head;
+}
+
+void List::operator=(List list)
+{
+	this->copy(list);
+}
+
+void List::copy(List list)
+{
+	this->~List();
+
+	Head = NULL;
+	Node* temp = list.Head;
+	while (temp)
+	{
+		this->Head = new Node{ temp->value, Head };
+		temp = temp->Next;
+	};
+};
+
+List List::operator+(List list)
+{
+	List buffer;
+	Node* temp = Head;
+	while (temp)
+	{
+		buffer.Head = new Node{ temp->value, Head };
+		temp = temp->Next;
+	}
+	temp = list.Head;
+	while (temp)
+	{
+		buffer.Head = new Node{ temp->value, Head };
+		temp = temp->Next;
+	}
+	return buffer;
+}
